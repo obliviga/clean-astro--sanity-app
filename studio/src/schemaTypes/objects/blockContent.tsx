@@ -56,5 +56,23 @@ export default defineType({
         ],
       },
     }),
+    // Allow images inside Portable Text content
+    defineArrayMember({
+      title: 'Image',
+      type: 'image',
+      options: {hotspot: true},
+      fields: [
+        {
+          name: 'alt',
+          title: 'Alternative text',
+          type: 'string',
+        },
+        {
+          name: 'caption',
+          title: 'Caption',
+          type: 'string',
+        },
+      ],
+    }),
   ],
 })
