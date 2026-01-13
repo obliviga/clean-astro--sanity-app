@@ -6,6 +6,7 @@ import Layout from "../../layouts/Layout.astro";
 import { formatDate } from "../../utils";
 import { urlFor } from "../../utils/image";
 import { getPost, getPosts } from "../../utils/sanity";
+import PortableVideo from "../../components/PortableVideo.astro";
 
 export async function getStaticPaths() {
   const posts = await getPosts();
@@ -43,8 +44,9 @@ const post = await getPost(slug);
         <PortableText
           value={post.body}
           components={{
-            type: {
-              image: PortableImage,
+              type: {
+                image: PortableImage,
+                video: PortableVideo,
             },
           }}
         />

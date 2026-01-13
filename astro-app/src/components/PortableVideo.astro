@@ -1,0 +1,69 @@
+---
+const { node } = Astro.props as { node: { url?: string; caption?: string } };
+
+function toEmbed(url?: string): string | null {
+  if (!url) return null;
+  try {
+    const u = new URL(url);
+    const host = u.hostname.replace(/^www\./, "");
+
+    // YouTube
+    if (host === "youtube.com" || host === "m.youtube.com") {
+      const id = u.searchParams.get("v");
+      if (id) return `https://www.youtube.com/embed/${id}`;
+    }
+    if (host === "youtu.be") {
+      const id = u.pathname.split("/").filter(Boolean)[0];
+      if (id) return `https://www.youtube.com/embed/${id}`;
+    }
+
+    // Vimeo
+    if (host === "vimeo.com") {
+      const id = u.pathname.split("/").filter(Boolean)[0];
+      if (id) return `https://player.vimeo.com/video/${id}`;
+    }
+
+    return null;
+  } catch {
+    return null;
+  }
+}
+
+const embed = toEmbed(node.url);
+---
+{embed ? (
+  <figure class="pt-video">
+    <div class="pt-video__container">
+      <iframe
+        src={embed}
+        title="Embedded video"
+        loading="lazy"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+        allowfullscreen
+        frameborder="0"
+      />
+    </div>
+    {node.caption ? <figcaption class="pt-video__caption">{node.caption}</figcaption> : null}
+  </figure>
+) : null}
+
+<style>
+  .pt-video__container {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+  }
+  .pt-video__container iframe {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+  .pt-video__caption {
+    font-size: var(--font-size-1);
+    line-height: var(--line-height-1);
+    color: var(--gray-700);
+    margin-top: var(--space-1);
+    text-align: center;
+  }
+</style>

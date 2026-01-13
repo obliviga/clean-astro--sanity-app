@@ -74,5 +74,10 @@ export default defineType({
         },
       ],
     }),
+    // Allow video embeds inside Portable Text content
+    defineArrayMember({
+      title: 'Video',
+      type: 'video',
+    }),
   ],
 })
