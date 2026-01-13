@@ -1,0 +1,77 @@
+---
+import { urlFor } from "../utils/image";
+
+const { node } = Astro.props as {
+  node: {
+    title?: string;
+    subtitle?: string;
+    image?: any;
+    ctaText?: string;
+    ctaUrl?: string;
+    align?: 'left' | 'center' | 'right';
+  };
+};
+
+const align = node.align ?? 'center';
+---
+<section class={`pt-hero pt-hero--${align}`}>
+  {node.image ? (
+    <img class="pt-hero__image" src={urlFor(node.image).url()} alt={node.image?.alt ?? ''} />
+  ) : null}
+  <div class="pt-hero__content">
+    {node.title ? <h2 class="pt-hero__title">{node.title}</h2> : null}
+    {node.subtitle ? <p class="pt-hero__subtitle">{node.subtitle}</p> : null}
+    {node.ctaText && node.ctaUrl ? (
+      <a class="pt-hero__cta" href={node.ctaUrl}>{node.ctaText}</a>
+    ) : null}
+  </div>
+</section>
+
+<style>
+  .pt-hero {
+    position: relative;
+    display: grid;
+    place-items: center;
+    padding: var(--space-6) var(--space-3);
+    border-radius: 8px;
+    overflow: hidden;
+    background: var(--gray-100);
+  }
+  .pt-hero__image {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0.25;
+  }
+  .pt-hero__content {
+    position: relative;
+    max-width: 800px;
+    text-align: center;
+  }
+  .pt-hero--left .pt-hero__content { text-align: left; }
+  .pt-hero--right .pt-hero__content { text-align: right; }
+
+  .pt-hero__title {
+    font-family: var(--font-family-sans);
+    font-size: var(--font-size-8);
+    line-height: var(--line-height-8);
+    margin: 0 0 var(--space-2);
+  }
+  .pt-hero__subtitle {
+    font-family: var(--font-family-serif);
+    font-size: var(--font-size-4);
+    line-height: var(--line-height-5);
+    margin: 0 0 var(--space-4);
+  }
+  .pt-hero__cta {
+    display: inline-block;
+    padding: 10px 16px;
+    background: var(--black);
+    color: var(--white);
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: 600;
+  }
+</style>

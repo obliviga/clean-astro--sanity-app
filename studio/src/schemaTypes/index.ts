@@ -1,7 +1,8 @@
 import blockContent from './objects/blockContent'
 import post from './documents/post'
 import video from './objects/video'
+import hero from './objects/hero'
 
 // Export an array of all the schema types.  This is used in the Sanity Studio configuration. https://www.sanity.io/docs/schema-types
 
-export const schemaTypes = [post, blockContent, video]
+export const schemaTypes = [post, blockContent, video, hero]

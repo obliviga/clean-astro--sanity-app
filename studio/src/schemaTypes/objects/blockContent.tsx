@@ -79,5 +79,10 @@ export default defineType({
       title: 'Video',
       type: 'video',
     }),
+    // Custom hero block
+    defineArrayMember({
+      title: 'Hero',
+      type: 'hero',
+    }),
   ],
 })

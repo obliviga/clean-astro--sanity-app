@@ -7,6 +7,7 @@ import { formatDate } from "../../utils";
 import { urlFor } from "../../utils/image";
 import { getPost, getPosts } from "../../utils/sanity";
 import PortableVideo from "../../components/PortableVideo.astro";
+import PortableHero from "../../components/PortableHero.astro";
 
 export async function getStaticPaths() {
   const posts = await getPosts();
@@ -47,6 +48,7 @@ const post = await getPost(slug);
               type: {
                 image: PortableImage,
                 video: PortableVideo,
+              hero: PortableHero,
             },
           }}
         />
