@@ -2,6 +2,7 @@ import {defineConfig} from 'sanity'
 import {structureTool} from 'sanity/structure'
 import {visionTool} from '@sanity/vision'
 import {schemaTypes} from './src/schemaTypes'
+import {presentationTool} from 'sanity/presentation'
 
 // Environment variables for project configuration
 const projectId = process.env.SANITY_STUDIO_PROJECT_ID || 'your-projectID'
@@ -12,7 +13,13 @@ export default defineConfig({
   title: 'Sanity Astro Starter',
   projectId,
   dataset,
-  plugins: [structureTool(), visionTool()],
+  plugins: [
+    structureTool(),
+    visionTool(),
+    presentationTool({
+      previewUrl: 'http://localhost:4321/',
+    }),
+  ],
   schema: {
     types: schemaTypes,
   },
