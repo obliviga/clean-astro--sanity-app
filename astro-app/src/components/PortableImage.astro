@@ -2,5 +2,9 @@
 import { urlFor } from "../utils/image";
 
 const { node } = Astro.props;
+const hasAsset = !!node?.asset?._ref;
+const src = hasAsset ? urlFor(node).url() : undefined;
 ---
-<img src={urlFor(node).url()} alt={node?.alt ?? ''} />
+{src ? (
+	<img src={src} alt={node?.alt ?? ''} />
+) : null}
