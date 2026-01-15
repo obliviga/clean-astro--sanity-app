@@ -50,7 +50,7 @@ export default defineConfig({
 	server: {
 		headers: {
 			"Content-Security-Policy":
-				"frame-ancestors 'self' https://*.sanity.studio",
+				"frame-ancestors 'self' http://localhost:3333 http://127.0.0.1:3333 https://*.sanity.studio",
 		},
 	},
 });
