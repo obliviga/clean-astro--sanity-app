@@ -2,6 +2,7 @@
 import type { InferGetStaticParamsType } from "astro";
 import { PortableText } from "astro-portabletext";
 import PortableImage from "../../components/PortableImage.astro";
+import PortableImageWithText from "../../components/PortableImageWithText.astro";
 import Layout from "../../layouts/Layout.astro";
 import { formatDate } from "../../utils";
 import { urlFor } from "../../utils/image";
@@ -53,6 +54,7 @@ const { data: post } = await loadQuery<Post>({
                 image: PortableImage,
                 video: PortableVideo,
               hero: PortableHero,
+              imageWithText: PortableImageWithText,
             },
           }}
         />

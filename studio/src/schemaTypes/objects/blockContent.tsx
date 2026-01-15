@@ -84,5 +84,10 @@ export default defineType({
       title: 'Hero',
       type: 'hero',
     }),
+    // Image with wrapping text block
+    defineArrayMember({
+      title: 'Image with text',
+      type: 'imageWithText',
+    }),
   ],
 })

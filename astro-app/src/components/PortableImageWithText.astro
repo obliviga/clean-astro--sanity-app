@@ -1,0 +1,79 @@
+---
+import { PortableText } from "astro-portabletext";
+import { urlFor } from "../utils/image";
+import { Debug } from 'astro:components';
+
+const { node } = Astro.props;
+
+const hasImage = !!node?.image?.asset?._ref;
+// Use the raw alignment value so Sanity's visual editing (stega encoding)
+// can still recognize and live-update this attribute. It may contain
+// invisible characters in devtools when visual editing is enabled.
+const alignment = typeof node?.align === "string" ? node.align : "left";
+const width = typeof node?.width === "number" ? node.width : 40;
+const imageUrl = hasImage ? urlFor(node.image).url() : undefined;
+---
+
+<Debug answer={node.image} />
+
+
+{imageUrl ? (
+  <div class={`image-with-text`}>
+    <div class={`image-container image-with-text__image--${alignment}`} style={`width: ${width}%;`}>
+      <img
+        class={`image-with-text__image`}
+        src={imageUrl}
+        alt={node?.image?.alt ?? ""}
+      />
+
+      <div class="image__caption">{node?.image?.caption ?? ""}</div>
+    </div>
+
+    {node?.body && node.body.length > 0 && (
+      <div class="image-with-text__body">
+        <PortableText value={node.body} />
+      </div>
+    )}
+    <div class="image-with-text__clear"></div>
+  </div>
+) : null}
+
+<style>
+  .image-container {
+    /* display: flex;
+    flex-direction: column; */
+  }
+
+  .image-with-text {
+    margin: 1.5rem 0;
+  }
+
+  .image-container {
+    height: auto;
+    display: block;
+  }
+
+  /* When visual editing is enabled, the alignment value in the class name
+     may be stega-encoded with invisible characters and there may be
+     additional classes before/after it. Match on a stable substring
+     instead of the full token. */
+  .image-container[class*="image-with-text__image--left"] {
+    float: left;
+    margin: 0 1.5rem 1rem 0;
+  }
+
+  .image-container[class*="image-with-text__image--right"] {
+    float: right;
+    margin: 0 0 1rem 1.5rem;
+  }
+
+  .image-with-text__body {
+    font-family: var(--font-family-serif);
+    font-size: var(--font-size-4);
+    line-height: var(--line-height-5);
+  }
+
+  .image-with-text__clear {
+    clear: both;
+  }
+</style>
