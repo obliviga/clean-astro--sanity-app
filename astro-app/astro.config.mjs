@@ -1,12 +1,14 @@
 // Loading environment variables from .env files
 // https://docs.astro.build/en/guides/configuring-astro/#environment-variables
 import { loadEnv } from "vite";
+const env = loadEnv(import.meta.env.MODE, process.cwd(), "");
 const {
 	PUBLIC_SANITY_STUDIO_PROJECT_ID,
 	PUBLIC_SANITY_STUDIO_DATASET,
 	PUBLIC_SANITY_PROJECT_ID,
 	PUBLIC_SANITY_DATASET,
-} = loadEnv(import.meta.env.MODE, process.cwd(), "");
+	PUBLIC_STUDIO_URL,
+} = env;
 import { defineConfig } from "astro/config";
 
 // Different environments use different variables
@@ -36,7 +38,11 @@ export default defineConfig({
 			// `false` if you want to ensure fresh data
 			apiVersion: "2024-12-08", // Set to date of setup to use the latest API version
 			stega: {
-				studioUrl: "http://localhost:3333/",
+				// In production, point to an env-provided Studio URL; default to local dev server
+				studioUrl:
+					import.meta.env.MODE === "production" && PUBLIC_STUDIO_URL
+						? PUBLIC_STUDIO_URL
+						: "http://localhost:3333/",
 			},
 		}),
 		react(), // Required for Sanity Studio
