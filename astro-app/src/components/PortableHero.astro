@@ -8,11 +8,22 @@ const { node } = Astro.props as {
     image?: any;
     ctaText?: string;
     ctaUrl?: string;
+    ctaLinkType?: 'internal' | 'external';
+    ctaResolvedSlug?: string | null;
     align?: 'left' | 'center' | 'right';
   };
 };
 
 const align = node.align ?? 'center';
+
+function sanitizeSlug(slug?: string | null): string | null {
+  if (!slug) return null;
+  const cleaned = slug
+    .normalize('NFKC')
+    .replace(/\p{Cf}/gu, '')
+    .trim();
+  return cleaned || null;
+}
 ---
 <section class={`pt-hero pt-hero--${align}`}>
   {node.image ? (
@@ -21,9 +32,17 @@ const align = node.align ?? 'center';
   <div class="pt-hero__content">
     {node.title ? <h2 class="pt-hero__title">{node.title}</h2> : null}
     {node.subtitle ? <p class="pt-hero__subtitle">{node.subtitle}</p> : null}
-    {node.ctaText && node.ctaUrl ? (
-      <a class="pt-hero__cta" href={node.ctaUrl}>{node.ctaText}</a>
-    ) : null}
+    {(() => {
+      const type = node.ctaLinkType ?? (node.ctaUrl ? 'external' : 'internal');
+      const safeSlug = sanitizeSlug(node.ctaResolvedSlug ?? null);
+      const href = type === 'internal' && safeSlug
+        ? `/post/${encodeURIComponent(safeSlug)}`
+        : node.ctaUrl;
+      const isExternal = type === 'external' && !!href;
+      return node.ctaText && href ? (
+        <a class="pt-hero__cta" href={href} {...(isExternal ? { target: '_blank', rel: 'noopener noreferrer' } : {})}>{node.ctaText}</a>
+      ) : null;
+    })()}
   </div>
 </section>
 

@@ -22,7 +22,16 @@ type Params = InferGetStaticParamsType<typeof getStaticPaths>;
 const { slug } = Astro.params as Params;
 
 const { data: post } = await loadQuery<Post>({
-  query: `*[_type == "post" && slug.current == $slug][0]`,
+  query: `*[_type == "post" && slug.current == $slug][0]{
+    ...,
+    body[]{
+      ...,
+      _type == "hero" => {
+        ...,
+        "ctaResolvedSlug": ctaInternalRef->slug.current
+      }
+    }
+  }`,
   params: { slug },
 });
 ---
