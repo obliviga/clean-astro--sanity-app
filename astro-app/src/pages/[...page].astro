@@ -1,0 +1,110 @@
+---
+import Layout from "../layouts/Layout.astro";
+import { PortableText } from "astro-portabletext";
+import PortableImage from "../components/PortableImage.astro";
+import PortableImageWithText from "../components/PortableImageWithText.astro";
+import PortableHero from "../components/PortableHero.astro";
+import PortableVideo from "../components/PortableVideo.astro";
+import { loadQuery } from "../lib/load-query";
+
+export const prerender = false;
+
+const raw = Astro.params.page as string; // catch-all, e.g. "about/team"
+const segments = (raw || '').split('/').filter(Boolean);
+const leaf = segments[segments.length - 1];
+
+type PageDoc = {
+  _id: string;
+  _type: 'page';
+  title?: string;
+  slug?: {current?: string};
+  body?: any[];
+  parent?: any;
+  p0?: {slug?: string; parent?: any} | null;
+  p1?: {slug?: string; parent?: any} | null;
+  p2?: {slug?: string; parent?: any} | null;
+  p3?: {slug?: string; parent?: any} | null;
+};
+
+const { data: candidates } = await loadQuery<PageDoc[]>({
+  query: `*[_type == "page" && slug.current == $leaf]{
+    ...,
+    // fetch up to 4 ancestors (extend if you need deeper nesting)
+    "p0": parent->{"slug": slug.current, parent},
+    "p1": parent->parent->{"slug": slug.current, parent},
+    "p2": parent->parent->parent->{"slug": slug.current, parent},
+    "p3": parent->parent->parent->parent->{"slug": slug.current, parent},
+  }`,
+  params: { leaf },
+});
+
+function ancestorSlugs(doc: PageDoc): string[] {
+  const arr = [doc.p3?.slug, doc.p2?.slug, doc.p1?.slug, doc.p0?.slug].filter(
+    (s): s is string => typeof s === 'string' && !!s
+  );
+  // arr is from farthest ancestor to nearest parent
+  return arr;
+}
+
+function sanitizeSlug(slug?: string | null): string | null {
+  if (!slug) return null;
+  const cleaned = slug.normalize('NFKC').replace(/\p{Cf}/gu, '').trim();
+  return cleaned || null;
+}
+
+let page: PageDoc | null = null;
+for (const doc of candidates || []) {
+  const chain = ancestorSlugs(doc).map((s) => sanitizeSlug(s)).filter(Boolean) as string[];
+  const requestedAncestors = segments.slice(0, Math.max(segments.length - 1, 0));
+  if (chain.join('/') === requestedAncestors.join('/')) {
+    page = doc;
+    break;
+  }
+}
+
+if (!page) {
+  throw new Error('Page not found');
+}
+---
+
+<Layout title={page.title ?? 'Page'}>
+  <section class="page">
+    <div class="page__container">
+      <h1 class="page__title">{page.title}</h1>
+      <div class="page__content">
+        {page.body ? (
+          <PortableText
+            value={page.body}
+            components={{
+              type: {
+                image: PortableImage,
+                video: PortableVideo,
+                hero: PortableHero,
+                imageWithText: PortableImageWithText,
+              },
+            }}
+          />
+        ) : null}
+      </div>
+    </div>
+  </section>
+</Layout>
+
+<style>
+  .page__container {
+    padding: 0 var(--space-3);
+  }
+  .page__title {
+    font-family: var(--font-family-sans);
+    font-size: var(--font-size-7);
+    line-height: var(--line-height-6);
+    margin: var(--space-4) 0;
+    font-weight: 800;
+  }
+  .page__content {
+    font-family: var(--font-family-serif);
+    font-size: var(--font-size-4);
+    line-height: var(--line-height-5);
+    margin-top: var(--space-6);
+  }
+</style>
