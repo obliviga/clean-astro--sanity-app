@@ -1,25 +1,18 @@
 ---
-import type { InferGetStaticParamsType } from "astro";
 import { PortableText } from "astro-portabletext";
 import PortableImage from "../../components/PortableImage.astro";
 import PortableImageWithText from "../../components/PortableImageWithText.astro";
 import Layout from "../../layouts/Layout.astro";
 import { formatDate } from "../../utils";
 import { urlFor } from "../../utils/image";
-import { getPosts, type Post } from "../../utils/sanity";
+import { type Post } from "../../utils/sanity";
 import PortableVideo from "../../components/PortableVideo.astro";
 import PortableHero from "../../components/PortableHero.astro";
 import { loadQuery } from "../../lib/load-query";
 
-export async function getStaticPaths() {
-  const posts = await getPosts();
-  return posts.map((post) => ({
-    params: { slug: post.slug.current },
-  }));
-}
+export const prerender = false;
 
-type Params = InferGetStaticParamsType<typeof getStaticPaths>;
-const { slug } = Astro.params as Params;
+const { slug } = Astro.params as { slug: string };
 
 const { data: post } = await loadQuery<Post>({
   query: `*[_type == "post" && slug.current == $slug][0]{
@@ -56,17 +49,19 @@ const { data: post } = await loadQuery<Post>({
         {formatDate(post._createdAt)}
       </p>
       <div class="post__content">
-        <PortableText
-          value={post.body}
-          components={{
+        {post.body ? (
+          <PortableText
+            value={post.body}
+            components={{
               type: {
                 image: PortableImage,
                 video: PortableVideo,
-              hero: PortableHero,
-              imageWithText: PortableImageWithText,
-            },
-          }}
-        />
+                hero: PortableHero,
+                imageWithText: PortableImageWithText,
+              },
+            }}
+          />
+        ) : null}
       </div>
     </div>
   </section>
