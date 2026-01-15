@@ -47,4 +47,10 @@ export default defineConfig({
 		}),
 		react(), // Required for Sanity Studio
 	],
+	server: {
+		headers: {
+			"Content-Security-Policy":
+				"frame-ancestors 'self' https://*.sanity.studio",
+		},
+	},
 });
