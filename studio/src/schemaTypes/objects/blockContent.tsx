@@ -73,6 +73,17 @@ export default defineType({
           type: 'string',
         },
       ],
+      preview: {
+        select: {
+          originalFilename: 'asset.originalFilename',
+        },
+        prepare(selection) {
+          const {originalFilename} = selection as {originalFilename?: string}
+          return {
+            title: originalFilename ? `Image – ${originalFilename}` : 'Image',
+          }
+        },
+      },
     }),
     // Allow video embeds inside Portable Text content
     defineArrayMember({
