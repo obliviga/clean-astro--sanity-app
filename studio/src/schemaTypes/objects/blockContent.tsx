@@ -75,12 +75,17 @@ export default defineType({
       ],
       preview: {
         select: {
+          media: 'asset',
           originalFilename: 'asset.originalFilename',
         },
         prepare(selection) {
-          const {originalFilename} = selection as {originalFilename?: string}
+          const {media, originalFilename} = selection as {
+            media?: any
+            originalFilename?: string
+          }
           return {
             title: originalFilename ? `Image – ${originalFilename}` : 'Image',
+            media,
           }
         },
       },
